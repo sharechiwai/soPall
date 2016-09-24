@@ -9,10 +9,13 @@
   "author": "sharechiwai",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.15.2",
     "ejs": "^2.5.2",
     "express": "^4.14.0",
     "node-libcurl": "^1.0.0",
+    "node-slack": "0.0.7",
     "requestify": "^0.2.3",
+    "slack-node": "^0.1.8",
     "twitter": "^1.4.0"
   }
 }
