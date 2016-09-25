@@ -7,20 +7,15 @@ var client = new Twitter({
     access_token_secret: 'RGGTCI5UMBxhRkCHLexCPGYSK9mfHOn2Wh2TkTQQSYSdT'
 });
 
-var params = { screen_name: 'nodejs' };/*
-client.get('statuses/user_timeline', params, function(error, tweets, response) {
-  if (!error) {
-    console.log(tweets);
-  }
-});*/
 
+var params = { screen_name: 'nodejs' };
 
- var Slack = require('slack-node');
+var Slack = require('slack-node');
 
 var express = require('express'),
     bodyParser = require('body-parser');
 
-var api_token = "xoxb-83587453430-44ZjcrhbEvKynb4KthpNmQOI";
+var api_token = "xoxp-83554108657-83543222838-83665283136-4f14344c6ff8f4eaa6bfb335fd2605b9";
 
 app = express(),
     port = process.env.PORT || 3000;
@@ -41,28 +36,26 @@ app.get('/slackoauth', function (req, res) {
     var result = "";
     console.log(req.query.code);
 
- //   client.get('https://slack.com/api/oauth.access?&scope=bot,incoming-webhook&client_id=83554108657.83546957248&client_secret=c3e12113aea0fc064ecba5fbddcd8801&code=' + req.query.code, { q: '#2hack1we' }, function (error, tweets, response) {
-   client.get('https://slack.com/api/oauth.access?client_id=83554108657.83546957248&client_secret=c3e12113aea0fc064ecba5fbddcd8801&code=' + req.query.code, { q: '#2hack1we' }, function (error, tweets, response) {
+    //   client.get('https://slack.com/api/oauth.access?&scope=bot,incoming-webhook&client_id=83554108657.83546957248&client_secret=c3e12113aea0fc064ecba5fbddcd8801&code=' + req.query.code, { q: '#2hack1we' }, function (error, tweets, response) {
+    client.get('https://slack.com/api/oauth.access?client_id=83554108657.83546957248&client_secret=c3e12113aea0fc064ecba5fbddcd8801&code=' + req.query.code, { q: '#2hack1we' }, function (error, tweets, response) {
         console.log(tweets);
         var access_token = tweets.access_token;
         var bot_token = tweets.bot.bot_access_token;
-        api_token=tweets.bot.bot_access_token;
+        api_token = tweets.bot.bot_access_token;
         console.log("access:" + bot_token);
         var channel = tweets.incoming_webhook.channel_id;
 
-
-       
         apiToken = bot_token;
-
         slack = new Slack(apiToken);
-
+        // userlist
         slack.api("users.list", function (err, response) {
             console.log(response);
         });
-
+/*
         slack.api('chat.postMessage', {
             channel: '#webhooksample',
-              response_type: 'ephemeral',
+            response_type: 'ephemeral',
+          //  text: "Welcome " + 
             attachments: JSON.stringify([
                 {
                     "text": "Choose a game to play",
@@ -105,7 +98,7 @@ app.get('/slackoauth', function (req, res) {
             console.log('err ' + err);
             res.render('pages/index', { data: result, content: "content.ejs" });
         });
-
+*/
     });
 
 
@@ -114,15 +107,7 @@ app.get('/slackoauth', function (req, res) {
 
 app.get('/slack', function (req, res) {
     var result = "";
-    /*
-    client.get('search/tweets', {q: '#2hack1we'}, function(error, tweets, response) {
-       console.log(tweets);
-    
-       result = tweets;
-       
-    });
-       */
-
+   
     res.render('pages/index', { data: result, content: "slacklogin.ejs" });
 });
 
@@ -142,90 +127,109 @@ app.get('/search', function (req, res) {
 });
 
 app.post('/msg', function (req, res) {
-    
+
     console.log("msg");
     console.log(req.body);
-    var result = "ss";
-    if(req.body.challenge !=null){
-        result=req.body.challenge;
-    }
 
+    // Extract message
+    var result = "ss";
+    if (req.body.challenge != null) {
+        result = req.body.challenge;
+    }
 
     res.send(result);
 });
 
 app.post('/btn', function (req, res) {
-    
+
     console.log("btn");
     console.log(req.body.payload);
     var payload = req.body.payload;
     var action = JSON.parse(payload);
     console.log(action.actions[0].value);
     var result = "ss";
-    if(action.actions[0].value !=null){
-        result=action.actions[0].value;
+    if (action.actions[0].value != null) {
+        result = action.actions[0].value;
     }
-
 
     res.send(result);
 });
+
 app.post('/cmd', function (req, res) {
-    console.log(req);
+ //   console.log(req);
     console.log(req.body);
     var result = "ssgffff";
-    if(req.body.text !=null){
-        result=req.body.text;
-    }
-    
-        slack = new Slack(api_token);
 
-     slack.api('chat.postMessage', {
-            channel: '#webhooksample',
-            response_type: 'ephemeral',
-            attachments: JSON.stringify([
-                {
-                    "text": "Are you sure you want to pay?",
-                    "fallback": "You are unable to pay",
-                    "callback_id": "wopr_game",
-                    "color": "#3AA3E3",
-                    "attachment_type": "default",
-                    "actions": [
-                       /* {
-                            "name": "yes",
-                            "text": "Yes",
-                            "type": "button",
-                            "value": "yes"
-                        },
-                        {
-                            "name": "no",
-                            "text": "No",
-                            "type": "button",
-                            "value": "no"
-                        },*/
-                        {
-                            "name": "yes",
-                            "text": "Review Payment",
-                            "style": "primary",
-                            "type": "button",
-                            "value": "yes",
-                            "confirm": {
-                                "title": "Are you sure?",
-                                "text": "You want to pay?",
-                                "ok_text": "Yes",
-                                "dismiss_text": "No"
-                            }
-                        }
-                    ]
-                }
-            ])
-        }, function (err, response) {
-            console.log(response);
-
-            console.log('err ' + err);
+    var cmd =req.body.command;
+    var receiver ="";
+    var amount ="";
+    if (req.body.text != null) {
+        result = req.body.text;
+console.log("------------------------");
+        // function to replace thing to single space
+        result = result.replace(/  +/g, ' ');
+        // tokenize event
+        var stringtoken = result.split(" "); 
+        console.log(stringtoken);
+        if(stringtoken.length>=2){
            
-        });
+            receiver = stringtoken[0];
+            amount = stringtoken[1];
+        }
 
-console.log("token:" + api_token);
+    }
+
+// Extract data
+
+    slack = new Slack(api_token);
+
+    slack.api('chat.postMessage', {
+        channel: '#webhooksample',
+        response_type: 'ephemeral',
+        attachments: JSON.stringify([
+            {
+                "text": "Are you sure you want to pay " + receiver + " for " + amount +"?",
+                "fallback": "You are unable to pay",
+                "callback_id": "wopr_game",
+                "color": "#3AA3E3",
+                "attachment_type": "default",
+                "actions": [
+                    /* {
+                         "name": "yes",
+                         "text": "Yes",
+                         "type": "button",
+                         "value": "yes"
+                     },
+                     {
+                         "name": "no",
+                         "text": "No",
+                         "type": "button",
+                         "value": "no"
+                     },*/
+                    {
+                        "name": "yes",
+                        "text": "Review Payment",
+                        "style": "primary",
+                        "type": "button",
+                        "value": "yes",
+                        "confirm": {
+                            "title": "Are you sure?",
+                            "text": "You want to pay?",
+                            "ok_text": "Yes",
+                            "dismiss_text": "No"
+                        }
+                    }
+                ]
+            }
+        ])
+    }, function (err, response) {
+       /// console.log(response);
+
+        console.log('err ' + err);
+
+    });
+
+    console.log("token:" + api_token);
 
     res.send(result);
 });

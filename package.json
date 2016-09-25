@@ -12,6 +12,7 @@
     "body-parser": "^1.15.2",
     "ejs": "^2.5.2",
     "express": "^4.14.0",
+    "mongodb": "^2.2.10",
     "node-libcurl": "^1.0.0",
     "node-slack": "0.0.7",
     "requestify": "^0.2.3",
