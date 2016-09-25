@@ -19,7 +19,8 @@ client.get('statuses/user_timeline', params, function(error, tweets, response) {
 
 var express = require('express'),
     bodyParser = require('body-parser');
-    
+
+var api_token = "xoxb-83587453430-44ZjcrhbEvKynb4KthpNmQOI";
 
 app = express(),
     port = process.env.PORT || 3000;
@@ -45,6 +46,7 @@ app.get('/slackoauth', function (req, res) {
         console.log(tweets);
         var access_token = tweets.access_token;
         var bot_token = tweets.bot.bot_access_token;
+        api_token=tweets.bot.bot_access_token;
         console.log("access:" + bot_token);
         var channel = tweets.incoming_webhook.channel_id;
 
@@ -60,6 +62,7 @@ app.get('/slackoauth', function (req, res) {
 
         slack.api('chat.postMessage', {
             channel: '#webhooksample',
+              response_type: 'ephemeral',
             attachments: JSON.stringify([
                 {
                     "text": "Choose a game to play",
@@ -139,21 +142,91 @@ app.get('/search', function (req, res) {
 });
 
 app.post('/msg', function (req, res) {
-    console.log(req);
+    
+    console.log("msg");
     console.log(req.body);
     var result = "ss";
     if(req.body.challenge !=null){
         result=req.body.challenge;
     }
+
+
+    res.send(result);
+});
+
+app.post('/btn', function (req, res) {
+    
+    console.log("btn");
+    console.log(req.body.payload);
+    var payload = req.body.payload;
+    var action = JSON.parse(payload);
+    console.log(action.actions[0].value);
+    var result = "ss";
+    if(action.actions[0].value !=null){
+        result=action.actions[0].value;
+    }
+
+
     res.send(result);
 });
 app.post('/cmd', function (req, res) {
     console.log(req);
     console.log(req.body);
-    var result = "ss";
+    var result = "ssgffff";
     if(req.body.text !=null){
         result=req.body.text;
     }
+    
+        slack = new Slack(api_token);
+
+     slack.api('chat.postMessage', {
+            channel: '#webhooksample',
+            response_type: 'ephemeral',
+            attachments: JSON.stringify([
+                {
+                    "text": "Are you sure you want to pay?",
+                    "fallback": "You are unable to pay",
+                    "callback_id": "wopr_game",
+                    "color": "#3AA3E3",
+                    "attachment_type": "default",
+                    "actions": [
+                       /* {
+                            "name": "yes",
+                            "text": "Yes",
+                            "type": "button",
+                            "value": "yes"
+                        },
+                        {
+                            "name": "no",
+                            "text": "No",
+                            "type": "button",
+                            "value": "no"
+                        },*/
+                        {
+                            "name": "yes",
+                            "text": "Review Payment",
+                            "style": "primary",
+                            "type": "button",
+                            "value": "yes",
+                            "confirm": {
+                                "title": "Are you sure?",
+                                "text": "You want to pay?",
+                                "ok_text": "Yes",
+                                "dismiss_text": "No"
+                            }
+                        }
+                    ]
+                }
+            ])
+        }, function (err, response) {
+            console.log(response);
+
+            console.log('err ' + err);
+           
+        });
+
+console.log("token:" + api_token);
+
     res.send(result);
 });
 app.listen(port, function () {
